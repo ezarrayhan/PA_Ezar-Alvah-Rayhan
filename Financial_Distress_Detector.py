@@ -303,7 +303,7 @@ with tabs[3]:
     }
 
     # Analisis Rasio Keuangan
-    if st.button("Analisis Rasio Keuangan"):
+    if st.button("Analisis & Prediksi"):
         # Menghitung rasio keuangan dari input manual
         rasio_keuangan_manual = calculate_ratios_from_input(inputs)
 
@@ -323,8 +323,6 @@ with tabs[3]:
         # Menampilkan DataFrame rasio keuangan yang telah dihitung
         st.dataframe(rasio_df_manual, use_container_width=True)
 
-    # Prediksi Financial Distress
-    if st.button("Prediksi Financial Distress"):
         # Menghitung rasio keuangan dari input manual
         rasio_keuangan_manual = calculate_ratios_from_input(inputs)
         rasio_keuangan_manual = np.array(rasio_keuangan_manual[3:]).reshape(1, -1)
