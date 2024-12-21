@@ -34,21 +34,6 @@ def calculate_ratios_from_input(inputs):
 # Initialize SHAP explainer
 explainer = shap.Explainer(xgb_model)
 
-# Fungsi untuk menampilkan bar chart SHAP
-def generate_shap_barchart(shap_values, feature_names):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    shap_values = shap_values[0]  # SHAP values untuk instance pertama
-    sorted_indices = np.argsort(shap_values)  # Urutkan SHAP values
-    sorted_shap_values = shap_values[sorted_indices]
-    sorted_feature_names = np.array(feature_names)[sorted_indices]
-
-    ax.barh(sorted_feature_names, sorted_shap_values, color='#2980b9')
-    ax.set_title("SHAP Bar Chart untuk Prediksi Individual")
-    ax.set_xlabel("Nilai SHAP")
-    ax.set_ylabel("Fitur")
-    plt.tight_layout()
-    return fig
-
 # Konfigurasi halaman Streamlit
 st.set_page_config(page_title="Dashboard Financial Distress", layout="centered", initial_sidebar_state="expanded")
 
@@ -196,6 +181,7 @@ with tabs[2]:
 
             # Buat DataFrame untuk rasio keuangan
             rasio_df = pd.DataFrame({
+                "Features": ["A", "B", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
                 "Rasio": [
                     "Current Ratio", "Return on Assets", "Debt to Assets Ratio", "Cash Ratio", "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over",
                     "Return on Equity", "Net Profit Margin", "Gross Profit Margin", "Interest Coverage Ratio", "Debt to Equity Ratio", "Price to Earnings Ratio", "Price to Book Ratio"
@@ -205,6 +191,7 @@ with tabs[2]:
             })
         else:
             rasio_df = pd.DataFrame({
+                "Features": ["A", "B", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
                 "Rasio": [
                     "Current Ratio", "Return on Assets", "Debt to Assets Ratio", "Cash Ratio", "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over",
                     "Return on Equity", "Net Profit Margin", "Gross Profit Margin", "Interest Coverage Ratio", "Debt to Equity Ratio", "Price to Earnings Ratio", "Price to Book Ratio"
@@ -222,10 +209,6 @@ with tabs[2]:
         if st.button("Prediksi Financial Distress Kombinasi 1"):
             prediction = xgb_model.predict(rasio_keuangan_1)
             probability = xgb_model.predict_proba(rasio_keuangan_1)[:, 1]
-    
-            # Kalkulasi SHAP values
-            explainer = shap.TreeExplainer(xgb_model)
-            shap_values = explainer.shap_values(rasio_keuangan_1)
             feature_names = [
                 "Cash Ratio", "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over",
                 "Return on Equity", "Net Profit Margin", "Gross Profit Margin", "Interest Coverage Ratio",
@@ -238,11 +221,22 @@ with tabs[2]:
             else:
                 st.markdown(f"<div class='alert alert-success'>Tidak Financial Distress<br>Probabilitas: {probability[0]:.4f}</div>", unsafe_allow_html=True)
     
-            # Tampilkan bar chart SHAP
-            st.write("### Tingkat Pengaruh Variabel")
-            st.write()
-            shap_fig = generate_shap_barchart(shap_values, feature_names)
-            st.pyplot(shap_fig)
+            # Kalkulasi SHAP
+            shap_1 = shap.maskers.Independent(rasio_keuangan_1)
+            explainer_1 = shap.Explainer(xgb_model, shap_1)
+            shap_values_1 = explainer(rasio_keuangan_1)
+
+            # Visualisasi SHAP: Bar plot
+            st.subheader("SHAP Bar Plot")
+            fig_bar_1, ax = plt.subplots()
+            shap.plots.bar(shap_values_1, max_display=13, show=False)
+            st.pyplot(fig_bar_1)
+
+            # Visualisasi SHAP: Summary plot
+            st.subheader("SHAP Summary Plot")
+            fig_summary_1, ax = plt.subplots()
+            shap.summary_plot(shap_values_1.values, rasio_keuangan_1, show=False)
+            st.pyplot(fig_summary_1)
 
         # Prediksi Financial Distress untuk kombinasi 2 saham dan tahun
         if filtered_data_2 is not None and not filtered_data_2.empty:
@@ -251,9 +245,6 @@ with tabs[2]:
             if st.button("Prediksi Financial Distress Kombinasi 2"):
                 prediction = xgb_model.predict(rasio_keuangan_2)
                 probability = xgb_model.predict_proba(rasio_keuangan_2)[:, 1]
-                # Kalkulasi SHAP values
-                explainer = shap.TreeExplainer(xgb_model)
-                shap_values = explainer.shap_values(rasio_keuangan_2)
                 feature_names = [
                     "Cash Ratio", "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over",
                     "Return on Equity", "Net Profit Margin", "Gross Profit Margin", "Interest Coverage Ratio",
@@ -265,11 +256,22 @@ with tabs[2]:
                     st.markdown(f"<div class='alert alert-danger'>Financial Distress<br>Probabilitas: {probability[0]:.4f}</div>", unsafe_allow_html=True)
                 else:
                     st.markdown(f"<div class='alert alert-success'>Tidak Financial Distress<br>Probabilitas: {probability[0]:.4f}</div>", unsafe_allow_html=True)
-                # Tampilkan bar chart SHAP
-                st.write("### Tingkat Kepentingan Variabel")
-                st.write()
-                shap_fig = generate_shap_barchart(shap_values, feature_names)
-                st.pyplot(shap_fig)
+                # Kalkulasi SHAP
+                shap_2 = shap.maskers.Independent(rasio_keuangan_2)
+                explainer_2 = shap.Explainer(xgb_model, shap_2)
+                shap_values_2 = explainer(rasio_keuangan_2)
+
+                # Visualisasi SHAP: Bar plot
+                st.subheader("SHAP Bar Plot")
+                fig_bar_2, ax = plt.subplots()
+                shap.plots.bar(shap_values_2, max_display=13, show=False)
+                st.pyplot(fig_bar_2)
+
+                # Visualisasi SHAP: Summary plot
+                st.subheader("SHAP Summary Plot")
+                fig_summary_2, ax = plt.subplots()
+                shap.summary_plot(shap_values_2.values, rasio_keuangan_2, show=False)
+                st.pyplot(fig_summary_2)
         else:
             st.write(" ")
     else:
@@ -307,6 +309,7 @@ with tabs[3]:
 
         # Buat DataFrame untuk menampilkan rasio keuangan
         rasio_df_manual = pd.DataFrame({
+            "Features": ["A", "B", "C", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
             "Rasio": [
                 "Current Ratio", "Return on Assets", "Debt to Assets Ratio", "Cash Ratio", 
                 "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over", 
@@ -329,10 +332,6 @@ with tabs[3]:
         # Prediksi menggunakan model
         prediction_manual = xgb_model.predict(rasio_keuangan_manual)
         probability_manual = xgb_model.predict_proba(rasio_keuangan_manual)[:, 1]
-    
-        # Kalkulasi SHAP values
-        explainer = shap.TreeExplainer(xgb_model)
-        shap_values_manual = explainer.shap_values(rasio_keuangan_manual)
         feature_names = [
             "Cash Ratio", "Day's Sales Outstanding", "Fixed Assets Turn Over", "Total Assets Turn Over",
             "Return on Equity", "Net Profit Margin", "Gross Profit Margin", "Interest Coverage Ratio",
@@ -352,10 +351,22 @@ with tabs[3]:
                 unsafe_allow_html=True
             )
     
-        # Tampilkan bar chart SHAP
-        st.write("### Tingkat Kepentingan Variabel")
-        shap_fig_manual = generate_shap_barchart(shap_values_manual, feature_names)
-        st.pyplot(shap_fig_manual)
+        # Kalkulasi SHAP
+        shap_manual = shap.maskers.Independent(rasio_keuangan_manual)
+        explainer_manual = shap.Explainer(xgb_model, shap_manual)
+        shap_values_manual = explainer(rasio_keuangan_manual)
+
+        # Visualisasi SHAP: Bar plot
+        st.subheader("SHAP Bar Plot")
+        fig_bar_manual, ax = plt.subplots()
+        shap.plots.bar(shap_values_manual, max_display=13, show=False)
+        st.pyplot(fig_bar_manual)
+
+        # Visualisasi SHAP: Summary plot
+        st.subheader("SHAP Summary Plot")
+        fig_summary_manual, ax = plt.subplots()
+        shap.summary_plot(shap_values_manual.values, rasio_keuangan_manual, show=False)
+        st.pyplot(fig_summary_manual)
 
 # Tab Profil Pembuat
 with tabs[4]:
