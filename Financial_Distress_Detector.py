@@ -284,22 +284,22 @@ with tabs[3]:
     
     # Input untuk variabel keuangan
     inputs = {
-        'laba_bersih': st.number_input("Laba Bersih", min_value=0.0),
-        'total_aktiva': st.number_input("Total Aktiva", min_value=0.0),
-        'total_liabilitas': st.number_input("Total Liabilitas", min_value=0.0),
-        'aktiva_lancar': st.number_input("Aktiva Lancar", min_value=0.0),
-        'liabilitas_lancar': st.number_input("Liabilitas Lancar", min_value=0.0),
-        'kas': st.number_input("Kas", min_value=0.0),
-        'penjualan': st.number_input("Penjualan", min_value=0.0),
-        'piutang': st.number_input("Piutang", min_value=0.0),
-        'aktiva_tetap': st.number_input("Aktiva Tetap", min_value=0.0),
-        'total_ekuitas': st.number_input("Total Ekuitas", min_value=0.0),
-        'laba_bruto': st.number_input("Laba Bruto", min_value=0.0),
-        'ebit': st.number_input("EBIT", min_value=0.0),
-        'beban_bunga': st.number_input("Beban Bunga", min_value=0.0),
-        'harga_saham': st.number_input("Harga Saham", min_value=0.0),
-        'laba_saham': st.number_input("Laba Saham", min_value=0.0),
-        'saham_beredar': st.number_input("Saham Beredar", min_value=0.0)
+        'laba_bersih': st.number_input("Laba Bersih"),
+        'total_aktiva': st.number_input("Total Aktiva"),
+        'total_liabilitas': st.number_input("Total Liabilitas"),
+        'aktiva_lancar': st.number_input("Aktiva Lancar"),
+        'liabilitas_lancar': st.number_input("Liabilitas Lancar"),
+        'kas': st.number_input("Kas"),
+        'penjualan': st.number_input("Penjualan"),
+        'piutang': st.number_input("Piutang"),
+        'aktiva_tetap': st.number_input("Aktiva Tetap"),
+        'total_ekuitas': st.number_input("Total Ekuitas"),
+        'laba_bruto': st.number_input("Laba Bruto"),
+        'ebit': st.number_input("EBIT"),
+        'beban_bunga': st.number_input("Beban Bunga"),
+        'harga_saham': st.number_input("Harga Saham"),
+        'laba_saham': st.number_input("Laba Saham"),
+        'saham_beredar': st.number_input("Saham Beredar")
     }
 
     # Analisis Rasio Keuangan
